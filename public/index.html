@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html ng-app="app">
+    <head>
+        <link rel="stylesheet" href="styles.css">
+        <title>CRICKET</title>
+    </head>
+    <body ng-controller="ctrl">
+        <div container="kesho">
+            <form ng-submit="addcri()">
+                <input type="text" ng-model="newcric.name" placeholder="Name" required>
+                <input type="number" ng-model="newcric.age" placeholder="Age" required>
+                <input type="number" ng-model="newcric.century" placeholder="Centuries" required>
+                <select ng-model="newcric.batsman" required>
+                    <option value="" disabled selected>Batsman?</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+               
+                <button type="submit">Submit</button>
+            </form>
+
+            <div>
+                <h3>Search by Name</h3>
+                <input type="text" ng-model="searchbyname" placeholder="Search">
+            </div>
+
+            <view-cric></view-cric>
+
+            <div ng-if="editcricdata">
+                <form ng-submit="updatecric()">
+                    <input type="text" ng-model="editcricdata.name" placeholder="Name" required>
+                    <input type="number" ng-model="editcricdata.age" placeholder="Age" required>
+                    <input type="number" ng-model="editcricdata.century" placeholder="Centuries" required>
+                    <select ng-model="editcricdata.batsman" required>
+                        <option value="" disabled selected>Batsmans</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                   
+                     
+                    <button type="submit">Submit</button>
+                    <button type="button" ng-click="canceledit()">Cancel</button>
+                </form>
+            </div>
+            
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+        <script src="app.js"></script>
+    </body>
+</html>
