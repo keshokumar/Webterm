@@ -1,50 +1,75 @@
 <!DOCTYPE html>
-<html ng-app="app">
-    <head>
-        <link rel="stylesheet" href="styles.css">
-        <title>CRICKET</title>
-    </head>
-    <body ng-controller="ctrl">
-        <div container="kesho">
-            <form ng-submit="addcri()">
-                <input type="text" ng-model="newcric.name" placeholder="Name" required>
-                <input type="number" ng-model="newcric.age" placeholder="Age" required>
-                <input type="number" ng-model="newcric.century" placeholder="Centuries" required>
-                <select ng-model="newcric.batsman" required>
-                    <option value="" disabled selected>Batsman?</option>
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
-                </select>
-               
-                <button type="submit">Submit</button>
-            </form>
+<html lang="en" ng-app="flightApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Booking System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body ng-controller="FlightController">
+    <div class="container">
+        <h1>Flight Booking System</h1>
 
-            <div>
-                <h3>Search by Name</h3>
-                <input type="text" ng-model="searchbyname" placeholder="Search">
-            </div>
-
-            <view-cric></view-cric>
-
-            <div ng-if="editcricdata">
-                <form ng-submit="updatecric()">
-                    <input type="text" ng-model="editcricdata.name" placeholder="Name" required>
-                    <input type="number" ng-model="editcricdata.age" placeholder="Age" required>
-                    <input type="number" ng-model="editcricdata.century" placeholder="Centuries" required>
-                    <select ng-model="editcricdata.batsman" required>
-                        <option value="" disabled selected>Batsmans</option>
-                        <option value="Yes">Yes</option>
-                        <option value="No">No</option>
-                    </select>
-                   
-                     
-                    <button type="submit">Submit</button>
-                    <button type="button" ng-click="canceledit()">Cancel</button>
-                </form>
-            </div>
+        <form ng-submit="addFlight()">
+            <input type="text" ng-model="newFlight.name" placeholder="Name" required>
+            <input type="text" ng-model="newFlight.seat" placeholder="Seat" required>
             
+            <select ng-model="newFlight.source" required>
+                <option value="" disabled selected>Select Source</option>
+                <option value="New York">New York</option>
+                <option value="Los Angeles">Los Angeles</option>
+                <option value="Chicago">Chicago</option>
+                <option value="Houston">Houston</option>
+                <option value="Miami">Miami</option>
+            </select>
+            
+            <select ng-model="newFlight.destination" required>
+                <option value="" disabled selected>Select Destination</option>
+                <option value="New York">New York</option>
+                <option value="Los Angeles">Los Angeles</option>
+                <option value="Chicago">Chicago</option>
+                <option value="Houston">Houston</option>
+                <option value="Miami">Miami</option>
+            </select>
+            
+            <button type="submit">Add Booking</button>
+        </form>
+
+        <view-flight></view-flight>
+
+
+        <div ng-if="editingFlight" class="edit-modal">
+            <h3>Edit Flight</h3>
+            <form ng-submit="updateFlight()">
+                <input type="text" ng-model="editingFlight.name" placeholder="Name" required>
+                <input type="text" ng-model="editingFlight.seat" placeholder="Seat" required>
+                
+                <select ng-model="editingFlight.source" required>
+                    <option value="" disabled selected>Select Source</option>
+                    <option value="New York">New York</option>
+                    <option value="Los Angeles">Los Angeles</option>
+                    <option value="Chicago">Chicago</option>
+                    <option value="Houston">Houston</option>
+                    <option value="Miami">Miami</option>
+                </select>
+                
+                <select ng-model="editingFlight.destination" required>
+                    <option value="" disabled selected>Select Destination</option>
+                    <option value="New York">New York</option>
+                    <option value="Los Angeles">Los Angeles</option>
+                    <option value="Chicago">Chicago</option>
+                    <option value="Houston">Houston</option>
+                    <option value="Miami">Miami</option>
+                </select>
+                
+                <button type="submit">Update Flight</button>
+                <button type="button" ng-click="cancelEdit()">Cancel</button>
+            </form>
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-        <script src="app.js"></script>
-    </body>
+    </div>
+
+ 
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="app.js"></script>
+</body>
 </html>

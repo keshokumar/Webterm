@@ -1,114 +1,121 @@
-var app = angular.module('app', []);
 
-// Factory to handle HTTP requests
-app.factory('fact', function($http) {
-    var base = 'http://localhost:5000/crics';
+var app = angular.module('flightApp', []);
+
+app.factory('FlightFactory', function($http) {
+    const apiUrl = 'http://localhost:3000/flights';
+
     return {
-        getcric: function() {
-            return $http.get(base);
+        getFlights: function() {
+            return $http.get(apiUrl);
         },
-        createcric: function(cricdata) {
-            return $http.post(base, cricdata);
+        addFlight: function(flightData) {
+            return $http.post(apiUrl, flightData);
         },
-        updatecric: function(cric) {
-            return $http.put(`${base}/${cric._id}`, cric);
+        updateFlight: function(flight) {
+            return $http.put(`${apiUrl}/${flight._id}`, flight);
         },
-        delcric: function(cricid) {
-            return $http.delete(`${base}/${cricid}`);
+        deleteFlight: function(flightId) {
+            return $http.delete(`${apiUrl}/${flightId}`);
         }
     };
 });
 
-// Service to call the factory methods
-app.service('serv', function(fact) {
-    this.fetchcric = function() {
-        return fact.getcric();
+app.service('FlightService', function(FlightFactory) {
+    this.fetchFlights = function() {
+        return FlightFactory.getFlights();
     };
-    this.addcri = function(cricdata) {
-        return fact.createcric(cricdata);
+
+    this.createFlight = function(flightData) {
+        return FlightFactory.addFlight(flightData);
     };
-    this.editcri = function(cric) {
-        return fact.updatecric(cric);
+
+    this.editFlight = function(flight) {
+        return FlightFactory.updateFlight(flight);
     };
-    this.remcri = function(cricid) {
-        return fact.delcric(cricid);
+
+    this.removeFlight = function(flightId) {
+        return FlightFactory.deleteFlight(flightId);
     };
 });
 
-// Controller for managing cricket players
-app.controller('ctrl', function($scope, serv) {
-    $scope.cric = [];
-    $scope.newcric = {};
-    $scope.editcricdata = null;
-    $scope.searchbyname = '';
+app.controller('FlightController', function($scope, FlightService) {
+    $scope.flights = [];
+    $scope.newFlight = {};
+    $scope.editingFlight = null;
 
-    // Fetch cricket players data
-    serv.fetchcric().then(function(response) {
-        $scope.cric = response.data;
+    FlightService.fetchFlights().then(function(response) {
+        $scope.flights = response.data;
+    }).catch(function(error) {
+        console.error("Error fetching flights:", error);
     });
 
-    // Add a new cricket player
-    $scope.addcri = function() {
-        serv.addcri($scope.newcric).then(function(response) {
-            $scope.cric.push(response.data);
-            $scope.newcric = {};  // Clear the new player data after adding
+    $scope.addFlight = function() {
+        FlightService.createFlight($scope.newFlight).then(function(response) {
+            $scope.flights.push(response.data);
+            $scope.newFlight = {}; 
+        }).catch(function(error) {
+            console.error("Error adding flight:", error);
         });
     };
 
-    // Delete a cricket player
-    $scope.deletecric = function(cricid) {
-        serv.remcri(cricid).then(function(response) {
-            // Remove the player from the list after deletion
-            $scope.cric = $scope.cric.filter(c => c._id !== cricid);
-        });
+    $scope.editFlight = function(flight) {
+        $scope.editingFlight = angular.copy(flight); 
     };
 
-    // Edit a cricket player data
-    $scope.editcric = function(cric) {
-        $scope.editcricdata = angular.copy(cric);  // Copy to avoid reference issues
-    };
-
-    // Update a cricket player data
-    $scope.updatecric = function() {
-        serv.editcri($scope.editcricdata).then(function(response) {
-            // Find and update the edited player in the list
-            let index = $scope.cric.findIndex(c => c._id === response.data._id);
+ 
+    $scope.updateFlight = function() {
+        FlightService.editFlight($scope.editingFlight).then(function(response) {
+           
+            let index = $scope.flights.findIndex(f => f._id === response.data._id);
             if (index !== -1) {
-                $scope.cric[index] = response.data;  // Update the player data in the array
+                $scope.flights[index] = response.data;
             }
-            $scope.editcricdata = null;  // Reset the edit form
+            $scope.editingFlight = null; 
+        }).catch(function(error) {
+            console.error("Error updating flight:", error);
         });
     };
 
-    // Cancel the edit operation
-    $scope.canceledit = function() {
-        $scope.editcricdata = null;  // Reset edit data
+   
+    $scope.deleteFlight = function(flightId) {
+        FlightService.removeFlight(flightId).then(function() {
+            $scope.flights = $scope.flights.filter(f => f._id !== flightId);
+        }).catch(function(error) {
+            console.error("Error deleting flight:", error);
+        });
+    };
+
+    $scope.cancelEdit = function() {
+        $scope.editingFlight = null;
     };
 });
 
-// Directive to view cricketers
-app.directive('viewCric', function() {
+app.directive('viewFlight', function() {
     return {
         restrict: 'E',
         template: `
-            <div>
-                <input type="text" ng-model="searchbyname" placeholder="Search by name">
-                <div ng-repeat="cri in cric | filter: {name: searchbyname}">
-                    <ul>
-                        <li>Name: {{cri.name}}</li>
-                        <li>Age: {{cri.age}}</li>
-                        <li>Centuries: {{cri.centuries}}</li>
-                        <li>Batsman: {{cri.batsman}}</li>
+        <div class="flight-list">
+            <h3>Flight List</h3>
+            <ul>
+                <li ng-repeat="flight in flights">
+                    <div class="flight-info">
+                        <p><strong>Name:</strong> {{ flight.name }}</p>
+                        <p><strong>Seat:</strong> {{ flight.seat }}</p>
+                        <p><strong>Source:</strong> {{ flight.source }}</p>
+                        <p><strong>Destination:</strong> {{ flight.destination }}</p>
                         
-                        <button type="button" ng-click="editcric(cri)">Edit</button>
-                        <button type="button" ng-click="deletecric(cri._id)">Delete</button>
-                    </ul>
-                </div>
-            </div>
+                        <button ng-click="editFlight(flight)">Edit</button>
+                        <button ng-click="deleteFlight(flight._id)">Delete</button>
+                    </div>
+                </li>
+            </ul>
+        </div>
         `,
-        controller: function($scope, serv) {
-            serv.fetchcric().then(function(response) {
-                $scope.cric = response.data;
+        controller: function($scope, FlightService) {
+            FlightService.fetchFlights().then(function(response) {
+                $scope.flights = response.data;
+            }).catch(function(error) {
+                console.error("Error fetching flights:", error);
             });
         }
     };
